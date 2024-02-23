@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/go-resty/resty/v2"
 )
@@ -14,8 +15,10 @@ const (
 type Reddit struct {
 	c *resty.Client
 
-	cfg   *Config
-	token *AccessToken
+	cfg *Config
+
+	token       *AccessToken
+	tokenExpire time.Time
 }
 
 func NewReddit(cfg *Config) *Reddit {
@@ -39,7 +42,18 @@ type Error struct {
 	Error string `json:"error"`
 }
 
-func (r *Reddit) GetAccessToken() (*AccessToken, error) {
+func (r *Reddit) Init() error {
+	now := time.Now()
+	token, err := r.getAccessToken()
+	if err != nil {
+		return err
+	}
+
+	r.tokenExpire = now.Add(time.Duration(token.ExpiresIn) * time.Second)
+	return nil
+}
+
+func (r *Reddit) getAccessToken() (*AccessToken, error) {
 	var (
 		token     AccessToken
 		redditErr Error
