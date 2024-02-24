@@ -64,6 +64,7 @@ func (r *Reddit) refreshToken() error {
 		return err
 	}
 
+	r.token = token
 	r.tokenExpire = now.Add(time.Duration(token.ExpiresIn) * time.Second)
 
 	// default Bearer tokena type
@@ -124,7 +125,7 @@ type Post struct {
 	Downs                int         `json:"downs"`
 	Ups                  int         `json:"ups"`
 	Category             interface{} `json:"category"`
-	Created              int         `json:"created"`
+	Created              float64     `json:"created"`
 	SelftextHTML         string      `json:"selftext_html"`
 	Likes                interface{} `json:"likes"`
 	Over18               bool        `json:"over_18"`
@@ -135,7 +136,7 @@ type Post struct {
 	Permalink            string      `json:"permalink"`
 	URL                  string      `json:"url"`
 	SubredditSubscribers int         `json:"subreddit_subscribers"`
-	CreatedUtc           int         `json:"created_utc"`
+	CreatedUtc           float64     `json:"created_utc"`
 }
 
 func (r *Reddit) GetHomePage() ([]*Post, error) {
