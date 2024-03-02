@@ -1,10 +1,11 @@
-package main
+package reddit
 
 import (
 	"fmt"
 	"time"
 
 	"github.com/go-resty/resty/v2"
+	"github.com/skyf0cker/rit/config"
 )
 
 const (
@@ -23,19 +24,29 @@ var (
 		"Accept":       "application/json",
 		"User-Agent":   "rit/0.1 by daydreaming_neo",
 	}
+
+	_reddit *Reddit
 )
+
+func init() {
+	_reddit = NewReddit(config.LoadConfig())
+}
+
+func GetReddit() *Reddit {
+	return _reddit
+}
 
 type Reddit struct {
 	oauthC *resty.Client
 	c      *resty.Client
 
-	cfg *Config
+	cfg *config.Config
 
 	token       *AccessToken
 	tokenExpire time.Time
 }
 
-func NewReddit(cfg *Config) *Reddit {
+func NewReddit(cfg *config.Config) *Reddit {
 	return &Reddit{
 		oauthC: resty.New().
 			SetBaseURL(_redditURL).
@@ -105,38 +116,6 @@ func (r *Reddit) getAccessToken() (*AccessToken, error) {
 	}
 
 	return &token, nil
-}
-
-type RedditItem[T any] struct {
-	Kind string `json:"kind"`
-	Data T      `json:"data"`
-}
-
-type Listing struct {
-	Children []RedditItem[Post] `json:"children"`
-}
-
-type Post struct {
-	Subreddit            string      `json:"subreddit"`
-	Selftext             string      `json:"selftext"`
-	AuthorFullname       string      `json:"author_fullname"`
-	Clicked              bool        `json:"clicked"`
-	Title                string      `json:"title"`
-	Downs                int         `json:"downs"`
-	Ups                  int         `json:"ups"`
-	Category             interface{} `json:"category"`
-	Created              float64     `json:"created"`
-	SelftextHTML         string      `json:"selftext_html"`
-	Likes                interface{} `json:"likes"`
-	Over18               bool        `json:"over_18"`
-	Visited              bool        `json:"visited"`
-	RemovedBy            interface{} `json:"removed_by"`
-	ID                   string      `json:"id"`
-	Author               string      `json:"author"`
-	Permalink            string      `json:"permalink"`
-	URL                  string      `json:"url"`
-	SubredditSubscribers int         `json:"subreddit_subscribers"`
-	CreatedUtc           float64     `json:"created_utc"`
 }
 
 func (r *Reddit) GetHomePage() ([]*Post, error) {

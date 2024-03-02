@@ -1,4 +1,4 @@
-module rit
+module github.com/skyf0cker/rit
 
 go 1.20
 

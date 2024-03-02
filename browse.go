@@ -1,6 +1,6 @@
 package main
 
-import "rit/ui"
+import "github.com/skyf0cker/rit/ui"
 
 type BrowseCmd struct {
 	Name string
