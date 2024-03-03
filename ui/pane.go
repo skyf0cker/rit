@@ -8,6 +8,7 @@ import (
 	"github.com/charmbracelet/bubbles/list"
 	"github.com/charmbracelet/bubbles/viewport"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/glamour"
 	"github.com/charmbracelet/lipgloss"
 	"github.com/skyf0cker/rit/reddit"
 )
@@ -193,12 +194,18 @@ func (p *PaneView) Render() {
 		title := s.post.Title
 		fmt.Fprintln(&p.content, p.styleTitle.Render(title))
 
-		// description := strings.TrimSpace(s.post.Selftext)
-		// fmt.Fprintln(&p.content, p.styleDescription.Render(description))
-
-		if s.post.SelftextHTML != "" {
-			fmt.Fprintln(&p.content, p.styleDescription.Copy().MarginTop(1).Width(p.style.GetWidth()).Render(HTMLText(s.post.SelftextHTML)))
+		description := strings.TrimSpace(s.post.Selftext)
+		text, err := glamour.Render(description, "dark")
+		if err != nil {
+			fmt.Fprintln(&p.content, "post content render failed")
+			return
 		}
+
+		fmt.Fprintln(&p.content, text)
+
+		// if s.post.SelftextHTML != "" {
+		// 	fmt.Fprintln(&p.content, p.styleDescription.Copy().MarginTop(1).Width(p.style.GetWidth()).Render(HTMLText(s.post.SelftextHTML)))
+		// }
 
 		// styleComment := lipgloss.NewStyle().
 		// 	Foreground(lipgloss.AdaptiveColor{Light: "#1a1a1a", Dark: "#dddddd"}).
