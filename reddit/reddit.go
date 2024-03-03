@@ -135,6 +135,7 @@ func (r *Reddit) GetHomePage() ([]*Post, error) {
 
 	var posts []*Post
 	for _, post := range data.Data.Children {
+		post := post
 		posts = append(posts, &post.Data)
 	}
 
